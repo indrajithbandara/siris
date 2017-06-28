@@ -1754,11 +1754,11 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 
 	if options.StreamingJSON {
 		if replacementJson {
-			var jsoniterConfig = &jsoniter.Config{
+			var jsoniterConfig = jsoniter.Config{
 				EscapeHtml:    !options.UnescapeHTML,
-				IndentionStep: options.Indent,
+				IndentionStep: 4,
 			}.Froze()
-			enc := jsoniterConfig.NewEncoder(ctx.writer)
+			enc := jsoniter.ConfigCompatibleWithStandardLibrary.NewEncoder(ctx.writer)
 		} else {
 			enc := json.NewEncoder(ctx.writer)
 			enc.SetEscapeHTML(!options.UnescapeHTML)
