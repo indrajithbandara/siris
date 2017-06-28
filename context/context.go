@@ -1744,6 +1744,7 @@ var defaultJSONOptions = JSON{}
 // JSON marshals the given interface object and writes the JSON response to the client.
 func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 	options := defaultJSONOptions
+	var err error
 	replacementJson := ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement()
 
 	if len(opts) > 0 {
@@ -1758,13 +1759,15 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 				EscapeHtml:    !options.UnescapeHTML,
 				IndentionStep: 4,
 			}.Froze()
-			enc := jsoniter.ConfigCompatibleWithStandardLibrary.NewEncoder(ctx.writer)
+			enc := jsoniterConfig.NewEncoder(ctx.writer)
+			err = enc.Encode(v)
 		} else {
 			enc := json.NewEncoder(ctx.writer)
 			enc.SetEscapeHTML(!options.UnescapeHTML)
 			enc.SetIndent(options.Prefix, options.Indent)
+			err = enc.Encode(v)
 		}
-		err := enc.Encode(v)
+
 		if err != nil {
 			ctx.StatusCode(http.StatusInternalServerError) // it handles the fallback to normal mode here which also removes the gzip headers.
 			return 0, err
@@ -1787,6 +1790,8 @@ var (
 
 // WriteJSONP marshals the given interface object and writes the JSON response to the writer.
 func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson bool) (int, error) {
+	var result []byte
+	var err error
 	if callback := options.Callback; callback != "" {
 		writer.Write([]byte(callback + "("))
 		defer writer.Write(finishCallbackB)
@@ -1795,9 +1800,9 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 	if indent := options.Indent; indent != "" {
 		if replacementJson {
 			// TODO: MarshalIndent not supportet at the moment from jsoniter
-			result, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
+			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 		} else {
-			result, err := json.MarshalIndent(v, "", indent)
+			result, err = json.MarshalIndent(v, "", indent)
 		}
 		if err != nil {
 			return 0, err
