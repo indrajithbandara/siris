@@ -1709,14 +1709,14 @@ func WriteJSON(writer io.Writer, v interface{}, options JSON, replacementJson bo
 	if indent := options.Indent; indent != "" {
 		if replacementJson {
 			// TODO: MarshalIndent not supportet at the moment from jsoniter
-			result, err = jsoniter.Marshal(v)
+			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 		} else {
 			result, err = json.MarshalIndent(v, "", indent)
 		}
 		result = append(result, newLineB...)
 	} else {
 		if replacementJson {
-			result, err = jsoniter.Marshal(v)
+			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 		} else {
 			result, err = json.Marshal(v)
 		}
@@ -1754,7 +1754,7 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 
 	if options.StreamingJSON {
 		if replacementJson {
-			enc := jsoniter.NewEncoder(ctx.writer)
+			enc := jsoniter.ConfigCompatibleWithStandardLibrary.NewEncoder(ctx.writer)
 		} else {
 			enc := json.NewEncoder(ctx.writer)
 		}
@@ -1791,9 +1791,9 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 	if indent := options.Indent; indent != "" {
 		if replacementJson {
 			// TODO: MarshalIndent not supportet at the moment from jsoniter
-			result, err = jsoniter.Marshal(v)
+			result, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 		} else {
-			result, err = json.MarshalIndent(v, "", indent)
+			result, err := json.MarshalIndent(v, "", indent)
 		}
 		if err != nil {
 			return 0, err
@@ -1803,7 +1803,7 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 	}
 
 	if replacementJson {
-		result, err = jsoniter.Marshal(v)
+		result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 	} else {
 		result, err = json.Marshal(v)
 	}
