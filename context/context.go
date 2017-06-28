@@ -1754,12 +1754,16 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 
 	if options.StreamingJSON {
 		if replacementJson {
-			enc := jsoniter.ConfigCompatibleWithStandardLibrary.NewEncoder(ctx.writer)
+			var jsoniterConfig = &jsoniter.Config{
+				EscapeHtml:    !options.UnescapeHTML,
+				IndentionStep: options.Indent,
+			}.Froze()
+			enc := jsoniterConfig.NewEncoder(ctx.writer)
 		} else {
 			enc := json.NewEncoder(ctx.writer)
+			enc.SetEscapeHTML(!options.UnescapeHTML)
+			enc.SetIndent(options.Prefix, options.Indent)
 		}
-		enc.SetEscapeHTML(!options.UnescapeHTML)
-		enc.SetIndent(options.Prefix, options.Indent)
 		err := enc.Encode(v)
 		if err != nil {
 			ctx.StatusCode(http.StatusInternalServerError) // it handles the fallback to normal mode here which also removes the gzip headers.
