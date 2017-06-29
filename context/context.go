@@ -1708,8 +1708,7 @@ func WriteJSON(writer io.Writer, v interface{}, options JSON, replacementJson bo
 
 	if indent := options.Indent; indent != "" {
 		if replacementJson {
-			// TODO: MarshalIndent not supportet at the moment from jsoniter
-			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
+			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", indent)
 		} else {
 			result, err = json.MarshalIndent(v, "", indent)
 		}
@@ -1799,8 +1798,7 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 
 	if indent := options.Indent; indent != "" {
 		if replacementJson {
-			// TODO: MarshalIndent not supportet at the moment from jsoniter
-			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
+			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", indent)
 		} else {
 			result, err = json.MarshalIndent(v, "", indent)
 		}
