@@ -6,6 +6,7 @@ clone_folder: c:\gopath\src\github.com\go-siris\siris
 
 environment:
   GOPATH: c:\gopath
+  GOVERSION: 1.8
 
 install:
   - echo %PATH%
@@ -14,13 +15,9 @@ install:
   - go version
   - go env
   - go get ./...
-  # install test dependencies
-  - go get golang.org/x/tools/cmd/cover
-  - go get -v github.com/axw/gocov
-  - go install github.com/axw/gocov/gocov
 
 test_script:
-  - for /f "" %%G in ('go list ./... ^| find /i /v "/vendor/"') do ( gocov test %%G & IF ERRORLEVEL == 1 EXIT 1) | gocov report
+  - ps: go test -race -v $(go list ./... | sls -n "vendor|_examples")
 
 branches:
   only:
