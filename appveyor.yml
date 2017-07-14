@@ -20,7 +20,7 @@ install:
   - go install github.com/axw/gocov/gocov
 
 test_script:
-  - for /f "" %%G in ('go list ./... ^| find /i /v "/vendor/"') do ( gocov test %%G & IF ERRORLEVEL == 1 EXIT 1)
+  - for /f "" %%G in ('go list ./... ^| find /i /v "/vendor/"') do ( gocov test %%G & IF ERRORLEVEL == 1 EXIT 1) | gocov report
 
 branches:
   only:
